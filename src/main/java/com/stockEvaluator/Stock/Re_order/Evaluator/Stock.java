@@ -10,13 +10,15 @@ public class Stock {
     private String productname;
     private int quantity;
     private int reorderlevel;
+    private String status;
     public Stock() {
     }
-    public Stock(int id, String productname, int quantity, int reorderlevel) {
+    public Stock(int id, String productname, int quantity, int reorderlevel,String status) {
         this.id = id;
         this.productname = productname;
         this.quantity = quantity;
         this.reorderlevel = reorderlevel;
+        this.status = status;
     }
     public int getId() {
         return id;
@@ -41,5 +43,11 @@ public class Stock {
     }
     public void setReorderlevel(int reorderlevel) {
         this.reorderlevel = reorderlevel;
+    }
+    public String getStatus() {
+    return status;
+}
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

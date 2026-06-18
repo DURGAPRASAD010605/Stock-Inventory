@@ -26,28 +26,42 @@ public class StockController {
         stock.setId(id);
         return stockRepository.save(stock);
     }
-    @PutMapping("/stock/add/{id}/{addQty}")
+   @PutMapping("/stock/add/{id}/{addQty}")
     public String addStockQuantity(@PathVariable int id, @PathVariable int addQty) {
+        Stock stock = stockRepository.findById(id).orElse(null);
+        if (stock == null) {
+            return "Product Not Found";
+        }
+        stock.setQuantity(stock.getQuantity() + addQty);
+        if (stock.getQuantity() <= stock.getReorderlevel()) {
+            stock.setStatus("Reorder Required");
+        } else {
+            stock.setStatus("Available");
+        }
+        stockRepository.save(stock);
+        return "Stock Added Successfully. Current Stock = " + stock.getQuantity();
+    }
+   @PutMapping("/stock/sell/{id}/{soldQty}")
+    public String sellStock(@PathVariable int id, @PathVariable int soldQty) {
+
     Stock stock = stockRepository.findById(id).orElse(null);
     if (stock == null) {
         return "Product Not Found";
     }
-    stock.setQuantity(stock.getQuantity() + addQty);
-    stockRepository.save(stock);
-    return "Stock Added Successfully. Current Stock = " + stock.getQuantity();
-}
-    @PutMapping("/stock/sell/{id}/{soldQty}")
-    public String sellStock(@PathVariable int id, @PathVariable int soldQty) {
-    Stock stock = stockRepository.findById(id).orElse(null);
-    if (stock == null) {
-        return "Product Not Found";
+    if (soldQty > stock.getQuantity()) {
+        return "Not Enough Stock Available";
     }
     stock.setQuantity(stock.getQuantity() - soldQty);
+    if (stock.getQuantity() <= stock.getReorderlevel()) {
+        stock.setStatus("Reorder Required");
+    } else {
+        stock.setStatus("Available");
+    }
     stockRepository.save(stock);
     if (stock.getQuantity() <= stock.getReorderlevel()) {
-        return "Reorder Required! Current Stock = "+stock.getQuantity();
+        return "Reorder Required! Current Stock = " + stock.getQuantity();
     }
-    return "Stock Updated Successfully . Current Stock = "+stock.getQuantity();
+    return "Stock Updated Successfully. Current Stock = " + stock.getQuantity();
 }
     @DeleteMapping("/stock/{id}")
     public String deleteStock(@PathVariable int id) {
